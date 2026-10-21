@@ -1,0 +1,190 @@
+/* Omer Ejaz design system: tokens and the component classes this site uses, ported from the Claude Design
+   export (v4) and pruned to the taste-skill house rules (no gradients, shadows, hairlines or monospace).
+   Font families point at next/font variables set in app/layout.tsx. */
+:root{
+  /* Palette. Monochrome by design; no accent colour. */
+  --oe-onyx:#131417;        /* text on light, the mark, the primary button */
+  --oe-onyx-raised:#2A2B30; /* primary hover, raised tone on dark */
+  --oe-graphite:#3A3B3F;    /* body text on light */
+  --oe-slate:#5A5B60;       /* secondary text on light; form field edges on dark */
+  --oe-steel:#8A8B8F;       /* the losing word in "x over y"; decoration, never body text */
+  --oe-mist:#C9C9C6;        /* secondary text on dark */
+  --oe-sunken:#EAEAE7;      /* the stage behind product pictures */
+  --oe-paper:#F4F4F2;       /* light ground; text on dark */
+  --oe-surface:#FBFBFA;     /* raised light surface */
+  --oe-mark-rev-end:#A9A9A6;/* the logo's own shading (brand asset) */
+  /* The dark half: a blue-black family taken from SensViz blue's hue (≈218°), so the blue belongs to it. */
+  --oe-ink:#000000;         /* page: pitch black */
+  --oe-ink-1:#000000;       /* section surface: the same black; cards are drawn with a line (.oe-line) */
+  --oe-ink-2:#000000;       /* raised surface: cards, tab bar, menu sheet */
+  --oe-ink-raised:#11151D;  /* fields and hovers on dark */
+  --oe-frost:#F5F7FA;       /* text on dark (≈18:1 on ink) */
+  --oe-mist-cool:#D0D7E2;   /* secondary text on dark (≈14:1) */
+  --oe-steel-cool:#9AA5B7;  /* quietest text on dark (≈8:1) */
+  --oe-ivory:#FAFAFA;       /* the light bands: a clean neutral white (no cream) */
+
+  /* The one thread of colour: SensViz blue. Strong for fills under white text (5.6:1),
+     soft for marks and text on black (8:1), base for the brand itself. */
+  --oe-blue:#0077FF;
+  --oe-blue-strong:#0062D6;
+  --oe-blue-soft:#8FC2FF;
+  /* The blue as a gradient: deep SensViz blue into indigo, held low so it glows rather than shines.
+     Fills carry white text (every stop ≥7:1 with white). taste-skill-ignore */
+  --oe-grad-deep:linear-gradient(125deg,#0A4CC2 0%,#1A3DA8 55%,#232D8C 100%); /* taste-skill-ignore */
+
+  /* Product colours, used only inside each product's own scene. */
+  --p-grant:#1E8E5E;  --p-grant-deep:#0F5A3B;
+  --p-cv:#C83E2B;
+  --p-play:#E9A23B;
+  --p-sipp:#0F8F9C;   --p-sipp-deep:#0B6670;
+  --p-ar:#B07A50;
+
+  --text-strong:var(--oe-onyx);
+  --text-body:var(--oe-graphite);
+  --text-muted:var(--oe-slate);
+  --text-disabled:var(--oe-steel);
+  --text-on-dark:var(--oe-frost);
+  --text-on-dark-muted:var(--oe-mist-cool);
+  --text-on-dark-quiet:var(--oe-steel-cool);
+
+  --surface-page:var(--oe-paper);
+  --surface-card:var(--oe-surface);
+  --surface-sunken:var(--oe-sunken);
+  --surface-dark-raised:var(--oe-ink-raised);
+  --border-strong:var(--oe-onyx);
+
+  --interactive-primary:var(--oe-onyx);
+  --interactive-primary-hover:var(--oe-onyx-raised);
+  --interactive-link:var(--oe-onyx);
+  --interactive-link-hover:var(--oe-slate);
+  --focus-ring:var(--oe-onyx);
+  --focus-ring-on-dark:var(--oe-frost);
+  --state-error:var(--oe-onyx);
+
+  /* Type. Serif speaks, sans explains. Two faces only. Six roles do all the work, each fluid from a phone
+     (390) through 1440 to 1080p (1920): hero 44→93→120 · section 40→63→76 · subtitle 24→30→34 ·
+     lead 19→22→24 · body 17→18→19 · small 15. Hero stays at 44px on phones so it holds two lines. */
+  --oe-font-display:var(--font-cormorant),'Cormorant Garamond',Georgia,'Times New Roman',serif;
+  --oe-font-text:var(--font-hanken),'Hanken Grotesk','Helvetica Neue',system-ui,sans-serif;
+  --oe-display-features:'kern','liga','dlig';
+
+  --type-hero:600 clamp(44px,calc(5.6vw + 12px),128px)/.98 var(--oe-font-display);
+  --type-display:600 clamp(40px,calc(2.6vw + 26px),80px)/1.02 var(--oe-font-display);
+  --type-subtitle:600 clamp(24px,calc(.9vw + 17px),34px)/1.2 var(--oe-font-display);
+  --type-lead:400 clamp(19px,calc(.35vw + 17px),24px)/1.5 var(--oe-font-text);
+  --type-body:400 clamp(17px,calc(.2vw + 15.4px),19px)/1.65 var(--oe-font-text);
+  --type-label:600 15px/1.3 var(--oe-font-text);
+  --type-small:400 15px/1.5 var(--oe-font-text);
+  --oe-tr-hero:-.015em;
+  --oe-tr-display:-.01em;
+  --oe-tr-wordmark:.2em;
+
+  /* Space and frame */
+  --oe-gap:12px;
+  --oe-pad-page:clamp(20px,3.4vw,64px);
+  --oe-max:clamp(1320px,86vw,1680px); /* the frame grows on large screens: ~1650px at 1080p */
+  --oe-measure:62ch;
+
+  --radius-button:100px;
+  --radius-input:12px;
+
+  /* Motion. Opacity and transform only. */
+  --oe-ease:cubic-bezier(.2,.7,.2,1);
+  --oe-dur-fast:150ms;
+  --oe-dur:200ms;
+}
+@media (prefers-reduced-motion:reduce){:root{--oe-dur-fast:0ms;--oe-dur:0ms}}
+
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--surface-page);color:var(--text-strong);font:var(--type-body);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+a{color:var(--interactive-link);text-underline-offset:4px;text-decoration-thickness:1px;transition:color var(--oe-dur) var(--oe-ease)}
+a:hover{color:var(--interactive-link-hover)}
+:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px}
+.oe-on-dark :focus-visible,.oe-on-dark:focus-visible{outline-color:var(--focus-ring-on-dark)}
+::selection{background:var(--oe-onyx);color:var(--oe-paper)}
+
+/* Type */
+.oe-hero{font:var(--type-hero);letter-spacing:var(--oe-tr-hero);font-feature-settings:var(--oe-display-features);text-wrap:balance}
+.oe-display{font:var(--type-display);letter-spacing:var(--oe-tr-display);font-feature-settings:var(--oe-display-features);text-wrap:balance}
+.oe-subtitle{font:var(--type-subtitle);font-feature-settings:var(--oe-display-features);text-wrap:balance}
+.oe-lead{font:var(--type-lead);color:var(--text-body);text-wrap:pretty}
+.oe-body{font:var(--type-body);color:var(--text-body);max-width:var(--oe-measure);text-wrap:pretty}
+.oe-label{font:var(--type-label)}
+.oe-small{font:var(--type-small);color:var(--text-muted)}
+
+/* Page frame + grid */
+.oe-page{max-width:var(--oe-max);margin:0 auto;padding:0 var(--oe-pad-page)}
+.oe-bento{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:var(--oe-gap)}
+.oe-span-3{grid-column:span 3}.oe-span-4{grid-column:span 4}.oe-span-5{grid-column:span 5}.oe-span-6{grid-column:span 6}.oe-span-7{grid-column:span 7}.oe-span-8{grid-column:span 8}.oe-span-9{grid-column:span 9}.oe-span-12{grid-column:span 12}
+@media (max-width:1023px){.oe-span-3{grid-column:span 6}.oe-span-4,.oe-span-5,.oe-span-7,.oe-span-8,.oe-span-9{grid-column:span 12}}
+@media (max-width:767px){.oe-bento>*{grid-column:1/-1}}
+
+/* Button: one flat fill, fully round */
+.oe-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:16px 26px;border:0;border-radius:var(--radius-button);background:var(--interactive-primary);color:var(--text-on-dark);font:var(--type-label);line-height:1;text-decoration:none;cursor:pointer;white-space:nowrap;transition:background-color var(--oe-dur) var(--oe-ease),transform var(--oe-dur-fast) var(--oe-ease)}
+.oe-btn:hover{background:var(--interactive-primary-hover);color:var(--text-on-dark)}
+.oe-btn:active{transform:scale(.97)}
+.oe-btn:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px}
+.oe-btn--brand{background:var(--oe-grad-deep);background-size:160% 100%;background-position:0 0;color:#fff;transition:background-position var(--oe-dur) var(--oe-ease),transform var(--oe-dur-fast) var(--oe-ease)} /* taste-skill-ignore */
+.oe-btn--brand:hover{background:var(--oe-grad-deep);background-size:160% 100%;background-position:100% 0;color:#fff} /* taste-skill-ignore */
+.oe-on-dark .oe-btn--brand:focus-visible{outline-color:var(--focus-ring-on-dark)}
+.oe-btn--sm{min-height:44px;padding:12px 20px}
+.oe-btn--inverse{background:var(--oe-frost);color:var(--text-strong)}
+.oe-btn--inverse:hover{background:var(--oe-mist-cool);color:var(--text-strong)}
+.oe-btn--inverse:focus-visible{outline-color:var(--focus-ring-on-dark)}
+.oe-btn svg{width:18px;height:18px;flex:none}
+
+/* Text link: underlined secondary action */
+.oe-link{display:inline-flex;align-items:center;gap:8px;min-height:44px;font:500 15px/1 var(--oe-font-text);color:var(--interactive-link);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px;cursor:pointer;background:none;border:0;padding:0;transition:color var(--oe-dur) var(--oe-ease)}
+.oe-link:hover{color:var(--interactive-link-hover)}
+.oe-link:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;border-radius:2px}
+.oe-link--on-dark{color:var(--text-on-dark)}
+.oe-link--on-dark:hover{color:var(--text-on-dark-muted)}
+.oe-link--on-dark:focus-visible{outline-color:var(--focus-ring-on-dark)}
+.oe-link svg{width:16px;height:16px;transition:transform var(--oe-dur) var(--oe-ease)}
+.oe-link:hover svg{transform:translateX(3px)}
+
+/* Form field. A real form control keeps its edge; it is how a field reads as a field. */
+.oe-field{display:flex;flex-direction:column;gap:8px;min-width:0}
+.oe-field__label{font:var(--type-label);color:var(--text-strong)}
+.oe-field__hint{font:var(--type-small);color:var(--text-muted)}
+.oe-field__control{width:100%;min-height:48px;padding:12px 14px;border:1px solid var(--oe-slate);border-radius:var(--radius-input);background:var(--surface-card);color:var(--text-strong);font:400 18px/1.4 var(--oe-font-text);transition:border-color var(--oe-dur) var(--oe-ease);appearance:none;-webkit-appearance:none} /* taste-skill-ignore: form field */
+.oe-field__control::placeholder{color:var(--text-muted)}
+.oe-field__control:focus{outline:2px solid var(--focus-ring);outline-offset:2px;border-color:var(--border-strong)}
+.oe-field--error .oe-field__control{border-color:var(--state-error);border-width:2px}
+.oe-field--error .oe-field__hint{color:var(--text-strong)}
+.oe-on-dark .oe-field__label{color:var(--text-on-dark)}
+.oe-on-dark .oe-field__hint{color:var(--text-on-dark-muted)}
+.oe-on-dark .oe-field__control{background:var(--surface-dark-raised);color:var(--text-on-dark);border-color:#5B6678} /* field edge ≥3:1 on ink */
+.oe-on-dark .oe-field__control::placeholder{color:var(--text-on-dark-muted)}
+.oe-on-dark .oe-field__control:focus{outline-color:var(--focus-ring-on-dark);border-color:var(--oe-mist)}
+.oe-on-dark .oe-field--error .oe-field__control{border-color:var(--oe-paper)}
+.oe-on-dark .oe-field--error .oe-field__hint{color:var(--text-on-dark)}
+
+/* Nav: wordmark, three links, one action, on the page ground. No bar. */
+.oe-nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 0;position:relative}
+.oe-nav__brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--text-strong);min-height:44px}
+.oe-nav__links{display:flex;align-items:center;gap:6px}
+.oe-nav__link{display:inline-flex;align-items:center;min-height:44px;padding:0 12px;font:500 15px/1 var(--oe-font-text);color:var(--text-muted);text-decoration:none;cursor:pointer;background:none;border:0;transition:color var(--oe-dur) var(--oe-ease)}
+.oe-nav__link:hover,.oe-nav__link[aria-current="page"]{color:var(--text-strong)}
+.oe-nav__cta{margin-left:10px}
+.oe-nav__toggle{display:none;min-height:44px;min-width:44px;align-items:center;justify-content:center;background:none;border:0;cursor:pointer;color:var(--text-strong)}
+.oe-nav__toggle svg{width:22px;height:22px}
+@media (max-width:767px){
+  .oe-nav__toggle{display:inline-flex}
+  .oe-nav__links{display:none;position:absolute;top:100%;left:0;right:0;flex-direction:column;align-items:stretch;gap:0;background:var(--surface-page);padding:8px 0 20px;z-index:10}
+  .oe-nav--open .oe-nav__links{display:flex}
+  .oe-nav__link{padding:0;min-height:52px;font-size:18px}
+  .oe-nav__cta{margin:16px 0 0;align-self:flex-start}
+}
+.oe-nav--on-dark .oe-nav__brand{color:var(--text-on-dark)}
+.oe-nav--on-dark .oe-nav__link{color:var(--text-on-dark-muted)}
+.oe-nav--on-dark .oe-nav__link:hover,.oe-nav--on-dark .oe-nav__link[aria-current="page"]{color:var(--text-on-dark)}
+.oe-nav--on-dark .oe-nav__toggle{color:var(--text-on-dark)}
+
+/* Wordmark / lockup (brand asset) */
+.oe-wordmark{font-family:var(--oe-font-display);font-weight:500;letter-spacing:var(--oe-tr-wordmark);line-height:1;text-transform:uppercase;white-space:nowrap}
+.oe-lockup{display:inline-flex;align-items:center;color:var(--text-strong)}
+.oe-lockup--on-dark{color:var(--text-on-dark)}
+
+/* Icon */
+.oe-icon{display:inline-block;flex:none;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}

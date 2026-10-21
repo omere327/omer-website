@@ -1,0 +1,383 @@
+@import "tailwindcss";
+/* Design-system classes sit in the components layer so Tailwind utilities can override them. */
+@import "../styles/oe.css" layer(components);
+/* Animated product scenes for "Built with SensViz". */
+@import "../styles/demos.css";
+/* Scroll reveals, hover light and scroll-driven motion. */
+@import "../styles/motion.css";
+
+@theme inline {
+  --color-onyx: var(--oe-onyx);
+  --color-onyx-raised: var(--oe-onyx-raised);
+  --color-graphite: var(--oe-graphite);
+  --color-slate: var(--oe-slate);
+  --color-steel: var(--oe-steel);
+  --color-mist: var(--oe-mist);
+  --color-paper: var(--oe-paper);
+  /* Surfaces step in tone, and only in tone. */
+  --color-ink: var(--oe-ink);
+  --color-surface-1: var(--oe-ink-1);
+  --color-surface-2: var(--oe-ink-2);
+  --color-sunken: var(--oe-sunken);
+  --color-card: var(--oe-surface);
+  --color-ivory: var(--oe-ivory);
+  --color-blue: var(--oe-blue);
+  --color-blue-strong: var(--oe-blue-strong);
+  --color-blue-soft: var(--oe-blue-soft);
+
+  --color-on-dark: var(--text-on-dark);
+  --color-on-dark-muted: var(--text-on-dark-muted);
+  --color-on-dark-quiet: var(--text-on-dark-quiet);
+  --color-surface-dark-raised: var(--surface-dark-raised);
+
+  --font-display: var(--oe-font-display);
+  --font-sans: var(--oe-font-text);
+
+  --ease-oe: cubic-bezier(0.2, 0.7, 0.2, 1);
+  /* One step past 2xl, for layouts that only fit on wide desktop screens. */
+  --breakpoint-3xl: 100rem;
+  --radius-pill: 999px;
+}
+
+/* The site is the dark variant of the system. Same layer as oe.css, declared later, so it wins. */
+@layer components {
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+    scroll-padding-top: 24px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    margin: 0;
+    background: var(--oe-ink);
+    color: var(--text-on-dark);
+    font: var(--type-body);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    touch-action: manipulation;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  a {
+    color: var(--text-on-dark);
+  }
+  a:hover {
+    color: var(--text-on-dark-muted);
+  }
+
+  /* Mobile menu: a black sheet that covers the whole screen under the nav (84px), so the page never shows
+     through below the links. */
+  @media (max-width: 767px) {
+    .oe-nav--on-dark .oe-nav__links {
+      background: var(--color-surface-2);
+      min-height: calc(100svh - 84px);
+      padding-top: 16px;
+      margin-inline: calc(var(--oe-pad-page) * -1);
+      padding-inline: var(--oe-pad-page);
+      transition:
+        opacity 200ms var(--ease-out-quint),
+        transform 200ms var(--ease-out-quint);
+    }
+    @starting-style {
+      .oe-nav--open .oe-nav__links {
+        opacity: 0;
+        transform: translateY(-6px);
+      }
+    }
+  }
+
+  /* Button arrows lean toward where they go. */
+  .oe-btn svg {
+    transition: transform 200ms ease;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .oe-btn:hover svg {
+      transform: translateX(3px);
+    }
+  }
+
+  /* Running text on dark: secondary passages in mist. The light band below re-inks them. */
+  .oe-on-dark .oe-body,
+  .oe-on-dark .oe-lead,
+  .oe-on-dark .oe-small,
+  .oe-on-dark .oe-field__hint {
+    color: var(--text-on-dark-muted);
+  }
+  .oe-light .oe-body,
+  .oe-light .oe-lead {
+    color: var(--oe-graphite);
+  }
+  .oe-light .oe-small {
+    color: var(--oe-slate);
+  }
+}
+
+/* ───────────────────────── Motion ─────────────────────────
+   One orchestrated moment on load (the hero), one-shot entrances as each section arrives,
+   and feedback on every control. Opacity and transform only. */
+
+:root {
+  /* Curves from the web-animation-design skill: ease-out for things arriving,
+     ease-in-out for things already on screen that move. */
+  --ease-out-quint: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+  --ease-in-out-cubic: cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+/* The headline's load: each word settles up a little, visible from the first frame (it is the page's
+   largest paint, so it must never wait behind a mask). */
+@keyframes oeSettle {
+  from {
+    transform: translateY(0.32em);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes oeMarkIn {
+  from {
+    opacity: 0;
+    transform: scale(1.06);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes oeFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes oeFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Masked word rise. Each word sits in a clipping box; the inner span travels up into it. */
+.oe-word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  /* Room for descenders inside the clip. */
+  padding: 0 0.04em 0.14em;
+  margin: 0 -0.04em -0.14em;
+}
+.oe-word > span {
+  display: inline-block;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Load sequence: the mark settles in, the words settle up, then the supporting line and actions. */
+  .oe-rise-load .oe-word {
+    overflow: visible;
+  }
+  .oe-rise-load .oe-word > span {
+    animation: oeSettle 1000ms var(--ease-out-expo) both;
+    animation-delay: calc(var(--i, 0) * 45ms);
+  }
+  .oe-fade-load {
+    animation: oeFadeUp 700ms var(--ease-out-quint) both;
+    animation-delay: var(--d, 0ms);
+  }
+  /* Opacity and scale only, so the large mark is composited rather than repainted every frame. */
+  .oe-eclipse {
+    animation: oeMarkIn 1200ms var(--ease-out-quint) both;
+  }
+}
+
+/* Section entrances: the heading, then the text, then the picture, staggered by --i.
+   Hidden only when script can reveal them and motion is welcome, so content never stays invisible. */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  [data-reveal="up"],
+  [data-reveal="strike"] {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity 700ms var(--ease-out-quint),
+      transform 900ms var(--ease-out-expo);
+    transition-delay: calc(var(--i, 0) * 80ms);
+  }
+  [data-reveal="up"][data-in],
+  [data-reveal="strike"][data-in] {
+    opacity: 1;
+    transform: none;
+  }
+
+  [data-reveal="words"] .oe-word > span {
+    transform: translateY(130%);
+    transition: transform 1100ms var(--ease-out-expo);
+    transition-delay: calc(var(--i, 0) * 70ms);
+  }
+  [data-reveal="words"][data-in] .oe-word > span {
+    transform: none;
+  }
+
+  /* "Execution over hype": the losing word is struck through as it arrives. */
+  [data-reveal="strike"] .oe-strike::after {
+    transform: scaleX(0);
+    transition: transform 900ms var(--ease-out-expo);
+    transition-delay: calc(300ms + var(--i, 0) * 140ms);
+  }
+  [data-reveal="strike"][data-in] .oe-strike::after {
+    transform: scaleX(1);
+  }
+}
+
+/* A strike-through drawn as a filled bar so it can animate; it is the text's own mark, not a divider. */
+.oe-strike {
+  position: relative;
+}
+.oe-strike::after {
+  content: "";
+  position: absolute;
+  left: -0.04em;
+  right: -0.04em;
+  top: 56%;
+  height: 0.06em;
+  background: var(--oe-steel);
+  transform-origin: left center;
+}
+
+/* View transitions (capability tabs). Only the named parts move; the rest of the page stays put. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+}
+::view-transition-old(.cap-exit) {
+  animation: 160ms var(--ease-out-quint) both oeCapOut;
+}
+::view-transition-new(.cap-enter) {
+  animation: 260ms var(--ease-out-quint) 60ms both oeCapIn;
+}
+@keyframes oeCapOut {
+  to {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+@keyframes oeCapIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}
+
+/* Reduced motion: everything off, including hover transitions. Unlayered, so it beats
+   Tailwind's utilities without !important. Reveals are never hidden in this mode. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* ───────────────────────── Footer wordmark ─────────────────────────
+   After langchain.com's footer: glass letters (an almost clear tint and a top sheen) with crisp inner edges
+   lit by a scroll-driven light (positioned by FooterWordmark.tsx). The owner asked for this footer exactly,
+   so its gradients and mask are a deliberate exception to the house style. */
+.ft-word {
+  position: relative;
+}
+.ft-word__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.ft-word__edges {
+  position: absolute;
+  inset: 0;
+}
+.ft-word__text {
+  font-family: var(--oe-font-display);
+  font-size: 250px;
+  font-weight: 500;
+}
+.ft-e {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+@keyframes ftPulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ft-dot {
+    animation: ftPulse 2.4s ease-in-out infinite;
+  }
+}
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  /* The wordmark rises in with the footer, and the e of the logo draws itself. */
+  .ft-word {
+    opacity: 0;
+    transform: translateY(32px);
+    transition:
+      opacity 900ms var(--ease-out-quint),
+      transform 1100ms var(--ease-out-expo);
+  }
+  .ft-word[data-in] {
+    opacity: 1;
+    transform: none;
+  }
+  .ft-e {
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset 1600ms var(--ease-in-out-cubic) 350ms;
+  }
+  .ft-word[data-in] .ft-e {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* The blue as a gradient (tokens in styles/oe.css). Fills carry white text; glows sit behind the type, away
+   from it, so contrast stays where it was. */
+@layer components {
+  .oe-grad-fill {
+    background-image: var(--oe-grad-deep); /* taste-skill-ignore */
+  }
+  /* Hero: a deep blue light rising behind the actions, faded at both edges so it has no seam against the nav
+     or the next section. */
+  .oe-glow-hero {
+    background: radial-gradient(80% 60% at 50% 85%, rgb(0 98 214 / 0.22), transparent 72%); /* taste-skill-ignore */
+    mask-image: linear-gradient(transparent, #000 20%, #000 80%, transparent); /* taste-skill-ignore */
+  }
+  /* Hero: a black pool centred on the type, between the mark and the words. */
+  .oe-hero-scrim {
+    background: radial-gradient(min(820px, 92vw) min(440px, 62vh) at 50% 48%, rgb(0 0 0 / 0.78), transparent 72%); /* taste-skill-ignore */
+  }
+  /* Footer: the same light, setting behind the wordmark. */
+  .oe-glow-footer {
+    background: radial-gradient(70% 60% at 30% 100%, rgb(0 98 214 / 0.12), transparent 70%); /* taste-skill-ignore */
+  }
+  /* Cards on the black page: no fill, a slight visible edge. */
+  .oe-line {
+    border: 1px solid rgb(255 255 255 / 0.14); /* taste-skill-ignore */
+  }
+  .oe-line-t {
+    border-top: 1px solid rgb(255 255 255 / 0.12); /* taste-skill-ignore */
+  }
+}

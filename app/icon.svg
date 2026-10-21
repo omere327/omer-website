@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="8 8 84 84">
+  <!-- The Omer Ejaz eclipse mark: o disc (34,50) r21.5, e stroke from (45,50). The e cuts through the o. -->
+  <style>
+    .ink { fill: #131417; stroke: #131417; }
+    @media (prefers-color-scheme: dark) { .ink { fill: #F4F4F2; stroke: #F4F4F2; } }
+  </style>
+  <defs>
+    <!-- The disc, with the e's path cut out of it. -->
+    <mask id="cut-e" maskUnits="userSpaceOnUse" x="0" y="0" width="100" height="100">
+      <rect width="100" height="100" fill="#fff"/>
+      <path d="M45 50 H83 A19 19 0 1 0 78.6 62.2" fill="none" stroke="#000" stroke-width="8" stroke-linecap="round"/>
+    </mask>
+    <!-- The e, only where it runs outside the disc. -->
+    <mask id="out-o" maskUnits="userSpaceOnUse" x="0" y="0" width="100" height="100">
+      <rect width="100" height="100" fill="#fff"/>
+      <circle cx="34" cy="50" r="21.5" fill="#000"/>
+    </mask>
+  </defs>
+  <circle class="ink" cx="34" cy="50" r="21.5" stroke="none" mask="url(#cut-e)"/>
+  <path class="ink" d="M45 50 H83 A19 19 0 1 0 78.6 62.2" fill="none" style="fill:none" stroke-width="8" stroke-linecap="round" mask="url(#out-o)"/>
+</svg>

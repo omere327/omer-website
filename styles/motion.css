@@ -1,0 +1,502 @@
+/* Motion layer two: scroll entrances, the pointer light, hover presence and scroll-driven motion.
+   Everything moves with transform, opacity or clip-path only. With reduced motion nothing travels: hover
+   still changes colour, and every element is simply there. The pointer light and tilt are for fine pointers
+   (components/motion/PointerLight.tsx sets --mx, --my, --px and --py on [data-spot]). */
+
+/* ─── Reading progress ─────────────────────────────────────────────────────────────────────────────── */
+.oe-progress {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 60;
+  height: 2px;
+  background: var(--oe-grad-deep); /* taste-skill-ignore */
+  transform-origin: left center;
+  transform: scaleX(0);
+  pointer-events: none;
+}
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .oe-progress {
+      animation: oeProgress linear both;
+      animation-timeline: scroll(root);
+    }
+  }
+}
+@supports not (animation-timeline: scroll()) {
+  .oe-progress {
+    display: none;
+  }
+}
+@keyframes oeProgress {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* ─── Hero: as you scroll away, the mark drifts and grows behind the type, and the type lifts off ──── */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .oe-eclipse > svg {
+      animation: oeHeroMark linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 100vh;
+    }
+    #hero-title {
+      animation: oeHeroLift linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 90vh;
+    }
+  }
+}
+@keyframes oeHeroMark {
+  to {
+    transform: translateY(14%) scale(1.12) rotate(-6deg);
+    opacity: 0.4;
+  }
+}
+/* The headline only lifts; it keeps its full white so it never reads as faded beside the paragraph. */
+@keyframes oeHeroLift {
+  to {
+    transform: translateY(-12vh);
+  }
+}
+
+/* ─── Scroll entrances ─────────────────────────────────────────────────────────────────────────────── */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  /* Cards stand up out of the page: a tilt back in depth that settles flat. */
+  [data-reveal="card"] {
+    opacity: 0;
+    transform: perspective(1400px) translateY(64px) rotateX(14deg) scale(0.96);
+    transform-origin: 50% 0;
+    transition:
+      opacity 800ms var(--ease-out-quint),
+      transform 1300ms var(--ease-out-expo);
+    transition-delay: calc(var(--i, 0) * 110ms);
+  }
+  [data-reveal="card"][data-in] {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Rows: the line draws across, then the name and the copy rise in behind it. */
+  [data-reveal="row"] .oe-row__line {
+    transform: scaleX(0);
+    transition: transform 1400ms var(--ease-out-expo);
+  }
+  [data-reveal="row"] .oe-row__name,
+  [data-reveal="row"] .oe-row__body {
+    opacity: 0;
+    transform: translateY(32px);
+    transition:
+      opacity 800ms var(--ease-out-quint) 200ms,
+      transform 1100ms var(--ease-out-expo) 200ms;
+  }
+  [data-reveal="row"] .oe-row__body {
+    transition-delay: 320ms;
+  }
+  [data-reveal="row"] .oe-row__tag {
+    opacity: 0;
+    transform: translateY(12px) scale(0.9);
+    transition:
+      opacity 500ms var(--ease-out-quint),
+      transform 700ms var(--ease-out-expo);
+    transition-delay: calc(560ms + var(--t, 0) * 70ms);
+  }
+  [data-reveal="row"][data-in] .oe-row__line {
+    transform: none;
+  }
+  [data-reveal="row"][data-in] .oe-row__name,
+  [data-reveal="row"][data-in] .oe-row__body,
+  [data-reveal="row"][data-in] .oe-row__tag {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Reading-list items slide in from the right, one after another. */
+  [data-reveal="slide"] {
+    opacity: 0;
+    transform: translateX(56px);
+    transition:
+      opacity 700ms var(--ease-out-quint),
+      transform 1100ms var(--ease-out-expo);
+    transition-delay: calc(var(--i, 0) * 110ms);
+  }
+  [data-reveal="slide"][data-in] {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Product scenes are uncovered from the bottom up while the stage settles from a slight zoom. */
+  [data-reveal="wipe"] {
+    clip-path: inset(100% 0 0 0);
+    transition: clip-path 1300ms var(--ease-out-expo);
+  }
+  [data-reveal="wipe"] > div {
+    transform: scale(1.14);
+  }
+  [data-reveal="wipe"][data-in] {
+    clip-path: inset(0);
+  }
+  [data-reveal="wipe"][data-in] > div {
+    transform: none;
+    /* The settle is slow; the scene's own hover zoom (the scale property) keeps its quicker pace. */
+    transition:
+      transform 1600ms var(--ease-out-expo),
+      scale 500ms ease;
+  }
+
+  /* The portrait rises into its card after the card arrives. */
+  [data-reveal="card"] .oe-portrait {
+    opacity: 0;
+    transform: translateY(48px);
+    transition:
+      opacity 900ms var(--ease-out-quint) 400ms,
+      transform 1400ms var(--ease-out-expo) 400ms;
+  }
+  [data-reveal="card"][data-in] .oe-portrait {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ─── The pointer light ────────────────────────────────────────────────────────────────────────────── */
+/* A soft SensViz-blue glow under the pointer, and a brighter light that runs along the card's edge. */
+.oe-spot {
+  position: relative;
+  isolation: isolate;
+}
+.oe-spot::before,
+.oe-spot::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 400ms var(--ease-out-quint);
+}
+.oe-spot::before {
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(480px circle at var(--mx, 50%) var(--my, 50%), rgb(0 119 255 / 0.16), transparent 60%); /* taste-skill-ignore */
+}
+.oe-spot::after {
+  inset: -1px;
+  padding: 1px;
+  z-index: 2;
+  background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), rgb(143 194 255 / 0.9), transparent 70%); /* taste-skill-ignore */
+  /* Only the 1px ring shows: the box minus its own content box. */
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box, /* taste-skill-ignore */
+    linear-gradient(#000 0 0); /* taste-skill-ignore */
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box exclude, /* taste-skill-ignore */
+    linear-gradient(#000 0 0); /* taste-skill-ignore */
+}
+@media (hover: hover) and (pointer: fine) {
+  .oe-spot:hover::before,
+  .oe-spot:hover::after {
+    opacity: 1;
+  }
+}
+
+/* ─── How I build: the stages ──────────────────────────────────────────────────────────────────────── */
+.oe-step {
+  transition:
+    transform 600ms var(--ease-out-expo),
+    border-color 400ms var(--ease-out-quint),
+    color 300ms var(--ease-out-quint);
+  will-change: transform;
+}
+.oe-step > :not(.oe-step__fill) {
+  position: relative;
+  z-index: 1;
+}
+/* The blue fill waits below the card and rises through it on hover. */
+.oe-step__fill {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: var(--oe-grad-deep); /* taste-skill-ignore */
+  clip-path: inset(100% 0 0 0);
+  transition: clip-path 650ms var(--ease-out-expo);
+}
+.oe-step__text,
+.oe-step__status {
+  color: var(--text-on-dark-muted);
+  transition: color 300ms var(--ease-out-quint);
+}
+/* The stage in progress is black like the rest; only its status is lit, in SensViz blue. */
+.oe-step[data-current] .oe-step__status {
+  color: var(--oe-blue-soft);
+}
+@media (hover: hover) and (pointer: fine) {
+  .oe-step:hover {
+    color: #fff;
+    border-color: rgb(143 194 255 / 0.4);
+  }
+  .oe-step:hover .oe-step__fill {
+    clip-path: inset(0);
+  }
+  .oe-step:hover .oe-step__text,
+  .oe-step:hover .oe-step__status {
+    color: #fff;
+  }
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  /* Lift and lean toward the pointer. */
+  .oe-step:hover {
+    transform: perspective(900px) translateY(-8px) rotateX(calc(var(--py, 0) * -7deg)) rotateY(calc(var(--px, 0) * 7deg));
+  }
+}
+
+/* ─── Four things: the rows ────────────────────────────────────────────────────────────────────────── */
+.oe-row {
+  position: relative;
+  isolation: isolate;
+}
+.oe-row::before {
+  /* The light under the pointer, as on the cards, softer and wider. */
+  content: "";
+  position: absolute;
+  inset: -12px calc(-1 * var(--oe-pad-page) / 2);
+  z-index: -1;
+  /* An ellipse that fades out well inside the row, so the light never shows an edge. */
+  background: radial-gradient(520px 200px at var(--mx, 50%) var(--my, 50%), rgb(0 119 255 / 0.14), transparent 70%); /* taste-skill-ignore */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 500ms var(--ease-out-quint);
+}
+.oe-row__line {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px; /* taste-skill-ignore: the owner asked for visible lines */
+  background: rgb(255 255 255 / 0.12); /* taste-skill-ignore */
+  transform-origin: left center;
+}
+.oe-row__line::after {
+  /* The blue that runs along the line on hover. */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #0A4CC2, #6CB8FF 50%, transparent); /* taste-skill-ignore */
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 900ms var(--ease-out-expo);
+}
+.oe-row__name {
+  transition:
+    color 300ms var(--ease-out-quint),
+    transform 700ms var(--ease-out-expo);
+}
+.oe-row__tag {
+  display: inline-flex;
+}
+.oe-row__tag > span {
+  transition:
+    background-color 300ms var(--ease-out-quint),
+    color 300ms var(--ease-out-quint),
+    transform 500ms var(--ease-out-expo);
+  transition-delay: calc(var(--t, 0) * 50ms);
+}
+@media (hover: hover) and (pointer: fine) {
+  .oe-row:hover::before {
+    opacity: 1;
+  }
+  .oe-row:hover .oe-row__line::after {
+    transform: none;
+  }
+  .oe-row:hover .oe-row__name {
+    color: var(--oe-blue-soft);
+  }
+  .oe-row:hover .oe-row__tag > span {
+    background: rgb(0 119 255 / 0.22);
+    color: #fff;
+  }
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .oe-row:hover .oe-row__name {
+    transform: translateX(14px);
+  }
+  .oe-row:hover .oe-row__tag > span {
+    transform: translateY(-4px) scale(1.06);
+  }
+}
+
+/* ─── Small presences ──────────────────────────────────────────────────────────────────────────────── */
+/* Capability questions step forward and light their edge. */
+.oe-qa {
+  transition:
+    transform 500ms var(--ease-out-expo),
+    border-color 300ms var(--ease-out-quint),
+    background-color 300ms var(--ease-out-quint);
+}
+/* Reading list: the topic turns blue, the question steps forward and an arrow arrives after it. */
+.oe-q__topic {
+  transition: color 300ms var(--ease-out-quint);
+}
+.oe-q__title {
+  display: inline-block;
+  transition: transform 700ms var(--ease-out-expo);
+}
+.oe-q__arrow {
+  display: inline-flex;
+  margin-left: 0.4em;
+  vertical-align: middle;
+  color: var(--oe-blue-soft);
+  opacity: 0;
+  transform: translateX(-10px);
+  transition:
+    opacity 300ms var(--ease-out-quint),
+    transform 600ms var(--ease-out-expo);
+}
+.oe-client {
+  transition:
+    color 300ms var(--ease-out-quint),
+    transform 600ms var(--ease-out-expo);
+}
+/* Brand buttons: a band of light crosses on hover. */
+.oe-btn--brand {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.oe-btn--brand::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(105deg, transparent 30%, rgb(255 255 255 / 0.22) 50%, transparent 70%); /* taste-skill-ignore */
+  transform: translateX(-110%);
+  transition: transform 800ms var(--ease-out-expo);
+}
+@media (hover: hover) and (pointer: fine) {
+  .oe-qa:hover {
+    border-color: rgb(143 194 255 / 0.45);
+    background: rgb(0 119 255 / 0.08);
+  }
+  .oe-q:hover .oe-q__topic,
+  .oe-client:hover {
+    color: var(--oe-blue-soft);
+  }
+  .oe-q:hover .oe-q__arrow {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .oe-qa:hover {
+    transform: translateX(8px);
+  }
+  .oe-q:hover .oe-q__title {
+    transform: translateX(12px);
+  }
+  .oe-client:hover {
+    transform: translateX(8px);
+  }
+  .oe-btn--brand:hover::after {
+    transform: translateX(110%);
+  }
+}
+
+/* ─── Questions people ask ─────────────────────────────────────────────────────────────────────────── */
+.oe-faq > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: clamp(24px, 2.6vw, 36px) 0;
+  cursor: pointer;
+  list-style: none;
+}
+.oe-faq > summary::-webkit-details-marker {
+  display: none;
+}
+.oe-faq > summary:focus-visible {
+  outline: 2px solid var(--focus-ring-on-dark);
+  outline-offset: 4px;
+}
+/* A plus that turns into a minus. */
+.oe-faq__icon {
+  position: relative;
+  flex: none;
+  width: 18px;
+  height: 18px;
+}
+.oe-faq__icon::before,
+.oe-faq__icon::after {
+  content: "";
+  position: absolute;
+  inset: 8px 0;
+  background: currentColor;
+  border-radius: 2px;
+  transition: transform 500ms var(--ease-out-expo);
+}
+.oe-faq__icon::after {
+  transform: rotate(90deg);
+}
+.oe-faq[open] .oe-faq__icon::after {
+  transform: rotate(0deg);
+}
+.oe-faq__a {
+  padding: 0 0 clamp(24px, 2.6vw, 36px);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .oe-faq[open] .oe-faq__a {
+    animation: oeFaqIn 500ms var(--ease-out-quint) both;
+  }
+}
+@keyframes oeFaqIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  .oe-faq > summary:hover {
+    color: var(--oe-blue-soft);
+  }
+}
+
+/* ─── Clients: the logo wall ───────────────────────────────────────────────────────────────────────── */
+/* At rest every logo sits in one quiet light tone, so ten brands read as one set; under the pointer the tile
+   lights and the logo takes its own colours and steps forward. */
+.oe-logo__img,
+.oe-logo__name {
+  transition:
+    filter 400ms var(--ease-out-quint),
+    opacity 400ms var(--ease-out-quint),
+    transform 600ms var(--ease-out-expo),
+    color 300ms var(--ease-out-quint);
+}
+.oe-logo__img {
+  filter: grayscale(1) brightness(1.35);
+  opacity: 0.72;
+}
+.oe-logo__name {
+  color: var(--text-on-dark-muted);
+}
+.oe-badge__img {
+  transform-origin: center;
+}
+@media (hover: hover) and (pointer: fine) {
+  .oe-logo:hover .oe-logo__img {
+    filter: none;
+    opacity: 1;
+  }
+  .oe-logo:hover .oe-logo__name {
+    color: #fff;
+  }
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .oe-logo:hover .oe-logo__img,
+  .oe-logo:hover .oe-logo__name {
+    transform: scale(1.08);
+  }
+}
+/* Touch screens have no hover, so the logos show in their own colours there. */
+@media (hover: none) {
+  .oe-logo__img {
+    filter: none;
+    opacity: 1;
+  }
+}
