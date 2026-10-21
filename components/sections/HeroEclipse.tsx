@@ -29,7 +29,9 @@ export function HeroEclipse() {
             crossing it. */}
         <path d={DISC} fill="url(#hero-mark-grad)" />
         <path
+          className="oe-eclipse__ring"
           d={E}
+          pathLength={1}
           fill="none"
           stroke="url(#hero-mark-grad)"
           strokeWidth="44"
@@ -37,7 +39,9 @@ export function HeroEclipse() {
         />
         {/* Where the e crosses the o it is cut out, as in the logo. */}
         <path
+          className="oe-eclipse__ring"
           d={E}
+          pathLength={1}
           fill="none"
           stroke="#000000"
           strokeWidth="44"

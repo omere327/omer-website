@@ -1,21 +1,32 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="8 8 84 84">
-  <!-- The Omer Ejaz eclipse mark: o disc (34,50) r21.5, e stroke from (45,50). The e cuts through the o. -->
-  <style>
-    .ink { fill: #131417; stroke: #131417; }
-    @media (prefers-color-scheme: dark) { .ink { fill: #F4F4F2; stroke: #F4F4F2; } }
-  </style>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- The Omer Ejaz mark on a badge: a rounded blue-black square with a faint SensViz-blue edge, the mark in
+       white. The badge carries its own ground, so it reads the same on light and dark tabs.
+       Mark geometry: o disc (34,50) r21.5, e stroke from (45,50). Where the e crosses the o it is cut out:
+       drawn as the e again in the badge's own gradient, clipped to the disc (no masks, so every renderer agrees). -->
   <defs>
-    <!-- The disc, with the e's path cut out of it. -->
-    <mask id="cut-e" maskUnits="userSpaceOnUse" x="0" y="0" width="100" height="100">
-      <rect width="100" height="100" fill="#fff"/>
-      <path d="M45 50 H83 A19 19 0 1 0 78.6 62.2" fill="none" stroke="#000" stroke-width="8" stroke-linecap="round"/>
-    </mask>
-    <!-- The e, only where it runs outside the disc. -->
-    <mask id="out-o" maskUnits="userSpaceOnUse" x="0" y="0" width="100" height="100">
-      <rect width="100" height="100" fill="#fff"/>
-      <circle cx="34" cy="50" r="21.5" fill="#000"/>
-    </mask>
+    <linearGradient id="bg" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="100" y2="100">
+      <stop offset="0" stop-color="#16213A"/>
+      <stop offset="1" stop-color="#05070C"/>
+    </linearGradient>
+    <!-- The same gradient in the mark's coordinates (the group below is translate(15.6 15) scale(0.7)). -->
+    <linearGradient id="bg-mark" gradientUnits="userSpaceOnUse" x1="-22.29" y1="-21.43" x2="120.57" y2="121.43">
+      <stop offset="0" stop-color="#16213A"/>
+      <stop offset="1" stop-color="#05070C"/>
+    </linearGradient>
+    <linearGradient id="edge" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8FC2FF" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#8FC2FF" stop-opacity=".08"/>
+    </linearGradient>
+    <clipPath id="disc">
+      <circle cx="34" cy="50" r="21.5"/>
+    </clipPath>
   </defs>
-  <circle class="ink" cx="34" cy="50" r="21.5" stroke="none" mask="url(#cut-e)"/>
-  <path class="ink" d="M45 50 H83 A19 19 0 1 0 78.6 62.2" fill="none" style="fill:none" stroke-width="8" stroke-linecap="round" mask="url(#out-o)"/>
+  <rect x="1" y="1" width="98" height="98" rx="24" fill="url(#bg)"/>
+  <rect x="1.75" y="1.75" width="96.5" height="96.5" rx="23.25" fill="none" stroke="url(#edge)" stroke-width="1.5"/>
+  <!-- The mark spans about x 12.5–87, y 28.5–71.5; scaled to 70% and centred on the badge. -->
+  <g transform="translate(15.6 15) scale(0.7)">
+    <circle cx="34" cy="50" r="21.5" fill="#F5F7FA"/>
+    <path d="M45 50 H83 A19 19 0 1 0 78.6 62.2" fill="none" stroke="#F5F7FA" stroke-width="8" stroke-linecap="round"/>
+    <path d="M45 50 H83 A19 19 0 1 0 78.6 62.2" fill="none" stroke="url(#bg-mark)" stroke-width="8" stroke-linecap="round" clip-path="url(#disc)"/>
+  </g>
 </svg>
