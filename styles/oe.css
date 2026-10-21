@@ -124,8 +124,8 @@ a:hover{color:var(--interactive-link-hover)}
 .oe-btn:hover{background:var(--interactive-primary-hover);color:var(--text-on-dark)}
 .oe-btn:active{transform:scale(.97)}
 .oe-btn:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px}
-.oe-btn--brand{background:var(--oe-grad-deep);background-size:160% 100%;background-position:0 0;color:#fff;transition:background-position var(--oe-dur) var(--oe-ease),transform var(--oe-dur-fast) var(--oe-ease)} /* taste-skill-ignore */
-.oe-btn--brand:hover{background:var(--oe-grad-deep);background-size:160% 100%;background-position:100% 0;color:#fff} /* taste-skill-ignore */
+.oe-btn--brand{background:var(--oe-grad-deep);color:#fff;transition:filter var(--oe-dur) var(--oe-ease),transform var(--oe-dur-fast) var(--oe-ease)} /* taste-skill-ignore */
+.oe-btn--brand:hover{background:var(--oe-grad-deep);color:#fff;filter:brightness(1.15)} /* the same blue as the cards, lit a step on hover. taste-skill-ignore */
 .oe-on-dark .oe-btn--brand:focus-visible{outline-color:var(--focus-ring-on-dark)}
 .oe-btn--sm{min-height:44px;padding:12px 20px}
 .oe-btn--inverse{background:var(--oe-frost);color:var(--text-strong)}
@@ -182,9 +182,9 @@ a:hover{color:var(--interactive-link-hover)}
 .oe-nav--on-dark .oe-nav__toggle{color:var(--text-on-dark)}
 
 /* Wordmark / lockup (brand asset) */
-.oe-wordmark{font-family:var(--oe-font-display);font-weight:500;letter-spacing:var(--oe-tr-wordmark);line-height:1;text-transform:uppercase;white-space:nowrap}
+.oe-wordmark{font-family:var(--oe-font-display);font-weight:600;letter-spacing:var(--oe-tr-wordmark);line-height:1;text-transform:uppercase;white-space:nowrap}
 .oe-lockup{display:inline-flex;align-items:center;color:var(--text-strong)}
-.oe-lockup--on-dark{color:var(--text-on-dark)}
+.oe-lockup--on-dark{color:#fff}
 
 /* Icon */
 .oe-icon{display:inline-block;flex:none;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}

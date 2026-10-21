@@ -9,7 +9,7 @@ import { useEffect, useRef } from "react";
  *  - edge layer: a crisp inner edge traced around every shape (an SVG filter: the shape minus itself eroded),
  *    lit by a soft spotlight. The light is tied to scroll: as the footer rises, it glides from the logo mark
  *    across the name, eased frame by frame (the same 0.12 smoothing and 18% radius LangChain uses).
- *  - the logo: when the footer arrives, the e of the mark draws itself in.
+ *  - the logo: each time the footer arrives, the e of the mark draws itself in (it resets when the footer leaves).
  * The mark uses the logo's own geometry (o disc, e stroke) at ×3.4.
  */
 const W = 1400;
@@ -41,14 +41,14 @@ export function FooterWordmark() {
     const footer = el?.closest("footer");
     if (!el || !light || !footer) return;
 
-    // The mark draws itself in once, when the wordmark first comes into view.
+    // The mark draws itself in each time the wordmark comes into view, and resets once it has left the screen,
+    // so scrolling back down plays it again.
     const io = new IntersectionObserver(
       ([e]) => {
-        if (!e.isIntersecting) return;
-        el.setAttribute("data-in", "");
-        io.disconnect();
+        if (e.intersectionRatio >= 0.3) el.setAttribute("data-in", "");
+        else if (!e.isIntersecting) el.removeAttribute("data-in");
       },
-      { threshold: 0.3 },
+      { threshold: [0, 0.3] },
     );
     io.observe(el);
 

@@ -308,8 +308,9 @@
   .oe-row:hover .oe-row__name {
     color: var(--oe-blue-soft);
   }
+  /* The tags take the same SensViz blue as the How I build cards and the buttons. */
   .oe-row:hover .oe-row__tag > span {
-    background: rgb(0 119 255 / 0.22);
+    background: var(--oe-grad-deep); /* taste-skill-ignore */
     color: #fff;
   }
 }

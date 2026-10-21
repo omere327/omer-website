@@ -46,7 +46,7 @@ export function NavBar({
       aria-label="Main"
     >
       <Link className="oe-nav__brand" href="/" onClick={close}>
-        <Lockup size={26} tone={onDark ? "dark" : "light"} cutColor={onDark ? undefined : "var(--oe-paper)"} />
+        <Lockup size={44} wordmarkSize={17} tone={onDark ? "dark" : "light"} cutColor={onDark ? undefined : "var(--oe-paper)"} />
       </Link>
       <button
         className="oe-nav__toggle"
